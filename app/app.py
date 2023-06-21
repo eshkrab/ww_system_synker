@@ -69,7 +69,8 @@ async def udp_heartbeat():
 
     while True:
         heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
-        await loop.sock_sendto(sock, heartbeat_msg, ("<broadcast>", udp_port))
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, sock.sendto, heartbeat_msg, ("<broadcast>", udp_port))
         await asyncio.sleep(1)
 
 async def udp_cleanup():
