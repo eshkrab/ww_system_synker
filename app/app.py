@@ -58,6 +58,7 @@ async def udp_server():
 
     while True:
         data, addr = await loop.sock_recv(sock, 1024)
+        logging.debug(f"Received message: {data} from {addr}")
         data = data.decode()
 
         if "heartbeat" in data:
