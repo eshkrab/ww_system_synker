@@ -28,6 +28,8 @@ config = load_config('config/config.json')
 
 logging.basicConfig(level=get_log_level(config['debug']['log_level']))
 
+polling_period_s = int(config['synker']['polling_period_s'])
+
 # Get hostname
 hostname = socket.gethostname()
 
@@ -61,7 +63,9 @@ async def udp_server():
         if "heartbeat" in data:
             node_hostname, node_ip = data.split()[1:]
             nodes[node_ip] = {"hostname": node_hostname, "last_heard": time.time()}
-            print(f"Heard from {node_hostname} ({node_ip})")
+            if node_ip not in nodes:
+                logging.info(f"Found {node_hostname} ({node_ip})")
+        await asyncio.sleep(0.1)
 
 async def udp_heartbeat():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -72,7 +76,7 @@ async def udp_heartbeat():
         heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, sock.sendto, heartbeat_msg, ("<broadcast>", udp_port))
-        await asyncio.sleep(1)
+        await asyncio.sleep(polling_period_s)
 
 async def udp_cleanup():
     while True:
@@ -80,11 +84,11 @@ async def udp_cleanup():
         nodes_copy = nodes.copy()
 
         for node_ip, node_info in nodes_copy.items():
-            if current_time - node_info["last_heard"] > 10:
+            if current_time - node_info["last_heard"] > polling_period_s*5:
                 del nodes[node_ip]
                 print(f"Lost {node_info['hostname']} ({node_ip})")
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(polling_period_s)
 
 ctx = zmq.asyncio.Context()
 async def zmq_publisher():
@@ -96,7 +100,7 @@ async def zmq_publisher():
     while True:
         known_nodes = [f"{info['hostname']} ({node_ip})" for node_ip, info in nodes.items()]
         await pub_socket.send_string(f"nodes: {known_nodes}")
-        await asyncio.sleep(5)
+        await asyncio.sleep(polling_period_s)
 
 async def main():
     await asyncio.gather(
