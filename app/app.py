@@ -85,9 +85,10 @@ async def udp_cleanup():
 
         await asyncio.sleep(1)
 
+ctx = zmq.asyncio.Context()
 async def zmq_publisher():
-    ctx = zmq.asyncio.Context()
 # Publish to the player app
+    global ctx
     pub_socket = ctx.socket(zmq.PUB)
     pub_socket.bind(f"tcp://{config['zmq']['ip_bind']}:{config['zmq']['port_synker_pub']}")  # Publish to the player app
 
