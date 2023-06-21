@@ -34,7 +34,7 @@ polling_period_s = int(config['synker']['polling_period_s'])
 hostname = socket.gethostname()
 
 # Get IP
-ip = ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr']
+ip = ni.ifaddresses('en0')[ni.AF_INET][0]['addr']
 
 
 ########################
@@ -74,6 +74,7 @@ async def udp_heartbeat():
 
     while True:
         heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
+        logging.debug(f"Sending heartbeat: {heartbeat_msg}")  
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, sock.sendto, heartbeat_msg, ("<broadcast>", udp_port))
         await asyncio.sleep(polling_period_s)
