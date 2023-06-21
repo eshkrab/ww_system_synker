@@ -86,13 +86,14 @@ async def udp_cleanup():
         await asyncio.sleep(1)
 
 async def zmq_publisher():
-    context = zmq.asyncio.Context()
-    pub = context.socket(zmq.PUB)
-    pub.bind(f"tcp://*:{zmq_port}")
+    ctx = zmq.asyncio.Context()
+# Publish to the player app
+    pub_socket = ctx.socket(zmq.PUB)
+    pub_socket.bind(f"tcp://{config['zmq']['ip_bind']}:{config['zmq']['port_synker_pub']}")  # Publish to the player app
 
     while True:
         known_nodes = [f"{info['hostname']} ({node_ip})" for node_ip, info in nodes.items()]
-        await pub.send_string(f"nodes: {known_nodes}")
+        await pub_socket.send_string(f"nodes: {known_nodes}")
         await asyncio.sleep(5)
 
 async def main():
