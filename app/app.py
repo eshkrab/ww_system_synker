@@ -44,7 +44,7 @@ pub_socket = ctx.socket(zmq.PUB)
 pub_socket.bind(f"tcp://{config['zmq']['ip_bind']}:{config['zmq']['port_synker_pub']}")  # Publish to the player app
 
 # Ports to listen on
-udp_port = config['synker']['udp_port']
+udp_port = int(config['synker']['udp_port'])
 
 # Dict of other nodes and the last time we heard from them
 nodes = {}
