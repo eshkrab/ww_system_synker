@@ -34,7 +34,7 @@ polling_period_s = int(config['synker']['polling_period_s'])
 hostname = socket.gethostname()
 
 # Get IP
-ip = ni.ifaddresses('en0')[ni.AF_INET][0]['addr']
+ip = ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr']
 
 
 ########################
