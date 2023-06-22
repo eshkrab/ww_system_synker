@@ -95,7 +95,7 @@ async def udp_cleanup():
         for node_ip, node_info in nodes_copy.items():
             if current_time - node_info["last_heard"] > polling_period_s*5:
                 del nodes[node_ip]
-                print(f"Lost {node_info['hostname']} ({node_ip})")
+                logging.info("Lost {node_info['hostname']} ({node_ip})")
 
         await asyncio.sleep(polling_period_s)
 
@@ -109,7 +109,6 @@ async def zmq_publisher():
     while True:
         known_nodes = [f"{info['hostname']} ({node_ip})" for node_ip, info in nodes.items()]
         await pub_socket.send_string(f"nodes: {known_nodes}")
-        logging.debug(f"Sending nodes: {known_nodes}")
         await asyncio.sleep(polling_period_s)
 
 async def main():
