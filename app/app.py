@@ -59,6 +59,7 @@ udp_port = int(config['synker']['udp_port'])
 nodes = {}
 
 async def udp_server():
+    loop = asyncio.get_running_loop()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((ip, udp_port))
     sock.setblocking(False)
