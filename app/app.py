@@ -10,9 +10,13 @@ import logging
 # CONFIG
 ############################
 def load_config(config_file):
-    with open(config_file, 'r') as f:
-        config = json.load(f)
-    return config
+    try:
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+        return config
+    except Exception as e:
+        logging.error("Error while loading configuration: " + str(e))
+        exit()
 
 def get_log_level( level):
     levels = {
@@ -24,10 +28,13 @@ def get_log_level( level):
     }
     return levels.get(level.upper(), logging.INFO)
 
+def setup_logging(config):
+    log_format = "%(asctime)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=get_log_level(config['debug']['log_level']), format=log_format)
+
+
 config = load_config('config/config.json')
-
-logging.basicConfig(level=get_log_level(config['debug']['log_level']))
-
+setup_logging(config)
 polling_period_s = int(config['synker']['polling_period_s'])
 
 # Get hostname
@@ -113,6 +120,5 @@ async def main():
         zmq_publisher()
     )
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
-
+if __name__ == "__main__":
+    asyncio.run(main())
