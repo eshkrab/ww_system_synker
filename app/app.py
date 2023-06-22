@@ -64,9 +64,12 @@ async def udp_server():
     sock.bind(("0.0.0.0", udp_port))
     sock.setblocking(False)
 
+    async def async_sock_recvfrom(sock, bufsize):
+        return await loop.run_in_executor(None, sock.recvfrom, bufsize)
+
     while True:
         logging.debug("Waiting for message")
-        data, addr = await loop.sock_recvfrom(sock, 1024)
+        data, addr = await async_sock_recvfrom(sock, 1024)  # <-- Use custom async_sock_recvfrom() function
         logging.debug(f"Received message: {data} from {addr}")
         data = data.decode()
 
@@ -76,6 +79,24 @@ async def udp_server():
             if node_ip not in nodes:
                 logging.info(f"Found {node_hostname} ({node_ip})")
         await asyncio.sleep(0.1)
+#  async def udp_server():
+#      loop = asyncio.get_running_loop()
+#      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#      sock.bind(("0.0.0.0", udp_port))
+#      sock.setblocking(False)
+#
+#      while True:
+#          logging.debug("Waiting for message")
+#          data, addr = await loop.sock_recvfrom(sock, 1024)
+#          logging.debug(f"Received message: {data} from {addr}")
+#          data = data.decode()
+#
+#          if "heartbeat" in data:
+#              node_hostname, node_ip = data.split()[1:]
+#              nodes[node_ip] = {"hostname": node_hostname, "last_heard": time.time()}
+#              if node_ip not in nodes:
+#                  logging.info(f"Found {node_hostname} ({node_ip})")
+#          await asyncio.sleep(0.1)
 
 async def udp_heartbeat():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
