@@ -61,7 +61,7 @@ nodes = {}
 async def udp_server():
     loop = asyncio.get_running_loop()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind((ip, udp_port))
+    sock.bind(("0.0.0.0", udp_port))
     sock.setblocking(False)
 
     while True:
