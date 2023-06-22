@@ -65,9 +65,7 @@ async def udp_server():
     sock.setblocking(False)
 
     while True:
-        logging.debug("Waiting for message")
         data = await loop.sock_recv(sock, 1024)
-        logging.debug(f"Received message: {data}")
         data = data.decode()
 
         if "heartbeat" in data:
@@ -84,7 +82,7 @@ async def udp_heartbeat():
 
     while True:
         heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
-        logging.debug(f"Sending heartbeat: {heartbeat_msg}")  
+        #  logging.debug(f"Sending heartbeat: {heartbeat_msg}")
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, sock.sendto, heartbeat_msg, ("<broadcast>", udp_port))
         await asyncio.sleep(polling_period_s)
@@ -111,6 +109,7 @@ async def zmq_publisher():
     while True:
         known_nodes = [f"{info['hostname']} ({node_ip})" for node_ip, info in nodes.items()]
         await pub_socket.send_string(f"nodes: {known_nodes}")
+        logging.debug(f"Sending nodes: {known_nodes}")
         await asyncio.sleep(polling_period_s)
 
 async def main():
