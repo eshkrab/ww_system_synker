@@ -66,7 +66,7 @@ async def udp_server():
 
     while True:
         logging.debug("Waiting for message")
-        data, addr = await loop.sock_recv(sock, 1024)
+        data, addr = await loop.sock_recvfrom(sock, 1024)
         logging.debug(f"Received message: {data} from {addr}")
         data = data.decode()
 
