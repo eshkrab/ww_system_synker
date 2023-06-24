@@ -76,6 +76,7 @@ async def udp_server():
         data = data.decode()
 
         if "heartbeat" in data:
+            logging.debug(f"Received heartbeat: {data}")
             node_hostname, node_ip = data.split()[1:]
             nodes[node_ip] = {"hostname": node_hostname, "last_heard": time.time()}
             if node_ip not in nodes:
@@ -89,7 +90,7 @@ async def udp_heartbeat():
 
     while True:
         heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
-        #  logging.debug(f"Sending heartbeat: {heartbeat_msg}")
+        logging.debug(f"Sending heartbeat: {heartbeat_msg}")
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, sock.sendto, heartbeat_msg, ("<broadcast>", udp_port))
         await asyncio.sleep(polling_period_s)
