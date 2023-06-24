@@ -44,7 +44,11 @@ hostname = socket.gethostname()
 available_interfaces = ni.interfaces()
 logging.info(available_interfaces)
 # Get IP
-ip = ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr']
+ip = None
+if 'wlan0' in available_interfaces:
+    ip = ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr']
+else:
+    print("wlan0 is not available")
 
 
 ########################
@@ -112,6 +116,7 @@ async def zmq_publisher():
     while True:
         known_nodes = [f"{info['hostname']} ({node_ip})" for node_ip, info in nodes.items()]
         await pub_socket.send_string(f"nodes: {known_nodes}")
+        logging.debug(f"Sending nodes: {known_nodes}")
         await asyncio.sleep(polling_period_s)
 
 async def main():
