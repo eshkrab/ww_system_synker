@@ -118,6 +118,7 @@ def check_re_sync_time():
   if time.time() - last_sync_time >= (sync_interval + random_delay):
     last_sync_time = time.time()  # Reset the sync time.
     random_delay = random.randint(0, 60)  # Generate a new random delay for next time.
+    logging.debug("Time to sync!")
     return True
   return False
 
