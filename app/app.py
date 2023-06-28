@@ -149,8 +149,8 @@ async def udp_cleanup():
         for node_ip, node_info in nodes_copy.items():
             if current_time - node_info["last_heard"] > polling_period_s*5:
                 del nodes[node_ip]
-                logging.info("Lost {{node_info['hostname']}} ({{node_ip}})")
-                logging.debug(f"Current nodes: {nodes}")
+                #  logging.info("Lost {{node_info['hostname']}} ({{node_ip}})")
+                #  logging.debug(f"Current nodes: {nodes}")
 
         await asyncio.sleep(polling_period_s)
 
