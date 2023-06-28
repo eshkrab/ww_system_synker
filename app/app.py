@@ -118,6 +118,7 @@ def check_re_sync_time():
     random_delay = random.randint(0, 60)  # Generate a new random delay for next time.
     logging.debug("Time to sync!")
     return True
+  logging.debug("Not time to sync yet.")
   return False
 
 async def udp_heartbeat():
@@ -135,6 +136,7 @@ async def udp_heartbeat():
 
     # Send regular heartbeat.
     heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
+    logging.debug(f"Sending heartbeat: {heartbeat_msg}")
     sock.sendto(heartbeat_msg, ("<broadcast>", udp_port))
     await asyncio.sleep(polling_period_s)
 
