@@ -38,7 +38,7 @@ def setup_logging(config):
 config = load_config('config/config.json')
 setup_logging(config)
 
-polling_period_s = int(config['synker']['polling_period_s'])
+polling_period_s = float(config['synker']['polling_period_s'])
 last_sync_time = time.time()  # Maintain the last sync time.
 sync_interval = int(config['synker']['sync_interval'])  # Sync interval in seconds.
 random_delay = random.randint(0, 600)  # Random delay between 0 and 10min
@@ -118,7 +118,7 @@ def check_re_sync_time():
     random_delay = random.randint(0, 60)  # Generate a new random delay for next time.
     logging.debug("Time to sync!")
     return True
-  logging.debug("Not time to sync yet.")
+  #  logging.debug("Not time to sync yet.")
   return False
 
 async def udp_heartbeat():
@@ -130,13 +130,13 @@ async def udp_heartbeat():
     if check_re_sync_time():
       # If yes, get a filename from the playlist.
       filename = get_filename_from_playlist()  # Insert your playlist file-choosing logic here.
-      logging.info(f"Syncing {filename}")
+      #  logging.info(f"Syncing {filename}")
       await pub_socket.send_string(f"sync {filename}")  # Send the filename to the player via ZMQ.
       logging.debug(f"Sync sent with filename: {filename}")
 
     # Send regular heartbeat.
     heartbeat_msg = f"heartbeat {hostname} {ip}".encode()
-    logging.debug(f"Sending heartbeat: {heartbeat_msg}")
+    #  logging.debug(f"Sending heartbeat: {heartbeat_msg}")
     sock.sendto(heartbeat_msg, ("<broadcast>", udp_port))
     await asyncio.sleep(polling_period_s)
 
