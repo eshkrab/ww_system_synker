@@ -132,6 +132,7 @@ async def udp_heartbeat():
       filename = get_filename_from_playlist()  # Insert your playlist file-choosing logic here.
       #  logging.info(f"Syncing {filename}")
       await pub_socket.send_string(f"sync {filename}")  # Send the filename to the player via ZMQ.
+      sock.sendto(f"sync {filename}".encode(), ("<broadcast>", udp_port))
       logging.debug(f"Sync sent with filename: {filename}")
 
     # Send regular heartbeat.
