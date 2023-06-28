@@ -98,11 +98,8 @@ async def udp_server():
     # detect and treat these messages differently in the future
     if "sync" in data:
       filename = data.split()[1]  # Assuming the filename is the second word in the message.
+      logging.debug(f"Sync received for filename: {filename}")
       await pub_socket.send_string(f"sync {filename}")
-      if config['debug']['log_level'] == 'DEBUG':
-        logging.debug(f"Sync received for filename: {filename}")
-      else:
-        logging.info(f"Sync received for filename: {filename}")
       
     elif "heartbeat" in data:
       node_hostname, node_ip = data.split()[1:]
