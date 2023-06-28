@@ -107,7 +107,7 @@ async def udp_server():
       if node_ip not in nodes:
         logging.info(f"Found {node_hostname} ({node_ip})")
 
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.05)
 
 def check_re_sync_time():
   global last_sync_time
