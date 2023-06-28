@@ -70,10 +70,14 @@ udp_port = int(config['synker']['udp_port'])
 # Dict of other nodes and the last time we heard from them
 nodes = {}
 
+video_dir = config['video_dir']
+
 def get_filename_from_playlist():
+    global video_dir
   #open playlist json file, pick a random item, look for "filepath" key
+    playlist_path = os.path.join(video_dir, "playlist.json")
     playlist = []
-    with open(config['synker']['playlist_file'], 'r') as f:
+    with open(playlist_path, 'r') as f:
         playlist = json.load(f)
     random_item = random.choice(playlist['playlist'])
     logging.debug(f"Random item: {random_item}")
@@ -126,6 +130,7 @@ async def udp_heartbeat():
     if check_re_sync_time():
       # If yes, get a filename from the playlist.
       filename = get_filename_from_playlist()  # Insert your playlist file-choosing logic here.
+      logging.info(f"Syncing {filename}")
       await pub_socket.send_string(f"sync {filename}")  # Send the filename to the player via ZMQ.
       logging.debug(f"Sync sent with filename: {filename}")
 
@@ -142,7 +147,7 @@ async def udp_cleanup():
         for node_ip, node_info in nodes_copy.items():
             if current_time - node_info["last_heard"] > polling_period_s*5:
                 del nodes[node_ip]
-                logging.info("Lost {node_info['hostname']} ({node_ip})")
+                logging.info("Lost {{node_info['hostname']}} ({{node_ip}})")
 
         await asyncio.sleep(polling_period_s)
 
