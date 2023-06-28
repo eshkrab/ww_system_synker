@@ -39,7 +39,7 @@ setup_logging(config)
 
 polling_period_s = int(config['synker']['polling_period_s'])
 last_sync_time = time.time()  # Maintain the last sync time.
-sync_interval = config['synker']['sync_interval']  # Sync interval in seconds.
+sync_interval = int(config['synker']['sync_interval'])  # Sync interval in seconds.
 random_delay = random.randint(0, 600)  # Random delay between 0 and 10min
 
 # Get hostname
